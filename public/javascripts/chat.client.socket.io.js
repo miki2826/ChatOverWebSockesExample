@@ -2,7 +2,7 @@ function getUser() {
     return sessionStorage.getItem("chat_user_name");
 }
 
-// IO
+//Create a Socket.io instance
 var socket = io.connect(document.location.protocol + '//' + document.location.host);
 
 // Ready
@@ -15,6 +15,25 @@ $(function () {
 
     // Receive Message
     socket.on('message', function (event) {
+        handleMessage(event);
+    });
+
+    //Send the message
+    function sendMessage(message) {
+        socket.emit('message', message);
+    }
+
+    input.on('keypress', function (event) {
+        if (event.keyCode === 13) { // enter
+            prepareAndSendMessage();
+        }
+    });
+
+    button.on('click', function (event) {
+        prepareAndSendMessage();
+    });
+
+    function handleMessage(event) {
         var content = event.text;
         var user = event.user;
         var userImage = "http://placehold.it/50/55C1E7/fff&amp;text=" + user.charAt(0);
@@ -30,20 +49,9 @@ $(function () {
         '</div>' +
         '</li>');
         messages.append(message);
-    });
+    }
 
-    // Send Message
-    input.on('keypress', function (event) {
-        if (event.keyCode === 13) { // enter
-            sendMessage();
-        }
-    });
-
-    button.on('click', function (event) {
-        sendMessage();
-    });
-
-    function sendMessage() {
+    function prepareAndSendMessage() {
         var user = getUser();
         var retMessage;
         retMessage = input.val().trim();
@@ -52,7 +60,7 @@ $(function () {
             user: user,
             text: retMessage
         };
-        socket.emit('message', message);
+        sendMessage(message);
         input.val(''); // clear input
     }
 });

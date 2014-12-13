@@ -2,8 +2,8 @@ function getUser() {
     return sessionStorage.getItem("chat_user_name");
 }
 
-// IO
-var sock = new SockJS(document.location.protocol + '//' + document.location.host + '/messages');
+//Create a SockJS instance
+var socket = new SockJS(document.location.protocol + '//' + document.location.host + '/messages');
 
 // Ready
 $(function () {
@@ -13,9 +13,28 @@ $(function () {
     var button = container.find('.sendButton');
     var input = container.find('.messageInput').focus();
 
-    // Receive Message
-    sock.onmessage = function(event) {
-        var messageParsed = JSON.parse(event.data);
+    //Receive Message
+    socket.onmessage = function(event) {
+        handleMessage(event.data);
+    };
+
+    //Send the message
+    function sendMessage() {
+        socket.send(JSON.stringify(message));
+    }
+
+    input.on('keypress', function (event) {
+        if (event.keyCode === 13) { // enter
+            prepareAndSendMessage();
+        }
+    });
+
+    button.on('click', function (event) {
+        prepareAndSendMessage();
+    });
+
+    function handleMessage(data) {
+        var messageParsed = JSON.parse(data);
         var content = messageParsed.text;
         var user = messageParsed.user;
         var userImage = "http://placehold.it/50/55C1E7/fff&amp;text=" + user.charAt(0);
@@ -31,20 +50,9 @@ $(function () {
         '</div>' +
         '</li>');
         messages.append(message);
-    };
+    }
 
-    // Send Message
-    input.on('keypress', function (event) {
-        if (event.keyCode === 13) { // enter
-            sendMessage();
-        }
-    });
-
-    button.on('click', function (event) {
-        sendMessage();
-    });
-
-    function sendMessage() {
+    function prepareAndSendMessage() {
         var user = getUser();
         var retMessage;
         retMessage = input.val().trim();
@@ -53,7 +61,8 @@ $(function () {
             user: user,
             text: retMessage
         };
-        sock.send(JSON.stringify(message));
+        sendMessage(message);
         input.val(''); // clear input
     }
+
 });
