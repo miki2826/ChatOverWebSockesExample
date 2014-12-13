@@ -1,4 +1,4 @@
-ChatOverWebSocketExample
+Chat Over WebSocket Example With NodeJS
 ========================
 
 An example chat app with NodeJS server over websockets
