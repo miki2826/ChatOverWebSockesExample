@@ -3,7 +3,7 @@ function getUser() {
 }
 
 // IO
-var socket = io.connect(document.location.protocol + '//' + document.location.host);
+var sock = new SockJS(document.location.protocol + '//' + document.location.host + '/messages');
 
 // Ready
 $(function () {
@@ -14,9 +14,10 @@ $(function () {
     var input = container.find('.messageInput').focus();
 
     // Receive Message
-    socket.on('message', function (event) {
-        var content = event.text;
-        var user = event.user;
+    sock.onmessage = function(event) {
+        var messageParsed = JSON.parse(event.data);
+        var content = messageParsed.text;
+        var user = messageParsed.user;
         var userImage = "http://placehold.it/50/55C1E7/fff&amp;text=" + user.charAt(0);
         var message = $('<li class="left clearfix"><span class="chat-img pull-left">' +
         '<img src="' + userImage + '"  class="img-circle">' +
@@ -30,7 +31,7 @@ $(function () {
         '</div>' +
         '</li>');
         messages.append(message);
-    });
+    };
 
     // Send Message
     input.on('keypress', function (event) {
@@ -52,7 +53,7 @@ $(function () {
             user: user,
             text: retMessage
         };
-        socket.emit('message', message);
+        sock.send(JSON.stringify(message));
         input.val(''); // clear input
     }
 });

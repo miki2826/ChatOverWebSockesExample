@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 var debug = require('debug')('ChatOverWebSockesExample');
 var app = require('../app');
-var chatOverSocket = require('../lib/chatOverSocketIO');
+var chatOverSocketIO = require('../lib/chatOverSocketIO');
+var chatOverSockJS = require('../lib/chatOverSocketSockJS.js');
 
 app.set('port', process.env.PORT || 3000);
 
@@ -9,4 +10,5 @@ var server = app.listen(app.get('port'), function() {
   debug('Express server listening on port ' + server.address().port);
 });
 
-chatOverSocket(server);
+chatOverSocketIO(server);
+chatOverSockJS.installHandlers(server, {prefix:'/messages'});
