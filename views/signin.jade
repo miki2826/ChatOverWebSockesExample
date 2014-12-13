@@ -1,0 +1,24 @@
+extends layout
+
+block scripts
+    script(type='text/javascript').
+        function login() {
+            var user = $('#username').val().trim();
+            sessionStorage.setItem('chat_user_name',user);
+        }
+
+
+block content
+    div(class="container center-block", style="width:300px")
+        div(class="row text-center")
+            a(href="/") Chat Demo
+
+        div(class="row text-center")
+            strong Log In
+
+        form(name="form", , action="chat", method="get", accept-charset="utf-8", onsubmit="login();", class="row")
+            div(class="row list-group")
+                div(class="list-group-item")
+                    input(type="text" name="username" id="username" placeholder="Name" class="form-control" required)
+            div.row
+                input(type="submit" class="btn btn-lg btn-primary btn-block" value="Log in")
