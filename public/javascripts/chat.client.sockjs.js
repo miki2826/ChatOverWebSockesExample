@@ -19,7 +19,7 @@ $(function () {
     };
 
     //Send the message
-    function sendMessage() {
+    function sendMessage(message) {
         socket.send(JSON.stringify(message));
     }
 
